@@ -20,10 +20,23 @@ if bit == "64bit":
     # load AutoItX3_x64.dll
     dll = "AutoItX3_x64.dll"
 
-dll_path = os.path.join(os.path.dirname(__file__), "lib", dll)
+dll_paths = [
+    # Load shipped library by default:
+    os.path.join(os.path.dirname(__file__), "lib"),
+    # "Program Files" if running in 64-bit mode or 32-bit machine, otherwise "Program Files (x86)":
+    os.path.join(os.environ["PROGRAMFILES"], "AutoIt3", "AutoItX"),
+    # "Program Files (x86)" if and only if running on 64-bit machine:
+    os.path.join(os.environ["PROGRAMFILES(X86)"], "AutoIt3", "AutoItX") if ("PROGRAMFILES(X86)" in os.environ) else None
+]
 
-if not os.path.exists(dll_path):
-    raise IOError("Cannot load AutoItX from path: %s" % dll_path)
+dll_path = None
+for path in [os.path.join(path, dll) for path in dll_paths if path]:
+    if os.path.isfile(path):
+        dll_path = path
+        break
+
+if not dll_path:
+    raise IOError("Cannot load AutoItX from any of the paths: %s" % dll_paths)
 
 AUTO_IT = ctypes.windll.LoadLibrary(dll_path)
 

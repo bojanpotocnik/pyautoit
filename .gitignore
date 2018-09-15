@@ -56,3 +56,5 @@ target/
 # Pycharm
 .idea/
 
+# AutoItX3.dll and AutoItX3_x64.dll from lib directory are tracked.
+!**/AutoItX3*.dll
